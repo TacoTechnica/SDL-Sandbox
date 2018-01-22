@@ -2,25 +2,20 @@
  *     The main game file, containing main and the central game loop
  */
 
+#include "game.h"
+#include "object_handler.h"
+#include "input_handler.h"
+
 #include<stdio.h>
 #include<SDL2/SDL.h>
 
-
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
-#define GAME_TITLE "C-Astro Party"
-
-#define GAME_FPS 60
 
 void Game_start();
 void Game_sdl_init();
 void Game_loop();
 void Game_tick();
 void Game_render();
-void Game_stop();
 
-SDL_Window *Game_window;
-SDL_Renderer *Game_renderer;
 int Game_running = 0;
 SDL_Event Game_sdl_event;
 
@@ -117,32 +112,34 @@ void Game_loop() {
 }
 
 void Game_tick() {
-    printf("tick!\n");
 
     // Handle SDL Events (keyboard input and window closing)
-    while (SDL_PollEvent(&Game_event)) {
-        switch(event.type) {
+    while (SDL_PollEvent(&Game_sdl_event)) {
+        switch(Game_sdl_event.type) {
             // Grab window events
             case SDL_WINDOWEVENT:
-                switch (event.window.event):
+                switch (Game_sdl_event.window.event) {
                     case SDL_WINDOWEVENT_CLOSE:
                         Game_stop();
                         exit(0);
                     break;
+                }
                 break;
             case SDL_KEYDOWN:
-                InputHandler_press_key(event.key.keysym.sym);
+                InputHandler_press_key(Game_sdl_event.key.keysym.sym);
                 break;
             case SDL_KEYUP:
-                InputHandler_release_key(event.key.keysym.sym);
+                InputHandler_release_key(Game_sdl_event.key.keysym.sym);
                 break;
-                
+        } 
     }
 
-    InputHandler_tick();
 
-    InputHandler_update(); 
+    ObjectHandler_tick();
 
+    // InputHandler_tick() MUST be called after the object tick
+    InputHandler_tick(); 
+    
 }
 
 void Game_render() {

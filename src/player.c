@@ -4,6 +4,8 @@
  *
  */
 #include "player.h"
+#include "game.h"
+
 #include <SDL2/SDL.h>
 
 
@@ -16,26 +18,27 @@ struct player *Player_create(float x, float y) {
     struct player *player = malloc( sizeof(struct player) );
     player->x = x;
     player->y = y;
+    player->rect = malloc( sizeof(SDL_Rect) );
     return player;
 }
 
-void Player_update(struct player player) {
-    player.x += 0.5;
+void Player_update(struct player *player) {
+    printf("player x: %f\n", player->x);
+    player->x += 0.5;
 }
 
-void Player_render(struct player player) {
+void Player_render(struct player *player) {
 
     SDL_SetRenderDrawColor(
-            renderer,
+            Game_renderer,
             255,
             0,
             0,
             255);
 
-    SDL_Rect player_rect;
-    player_rect.x = player.x;
-    player_rect.y = player.y;
-    player_rect.w = 64;
-    player_rect.h = 64;
-    SDL_RenderDrawRect(renderer, player_rect);
+    player->rect->x = player->x;
+    player->rect->y = player->y;
+    player->rect->w = 64;
+    player->rect->h = 64;
+    SDL_RenderDrawRect(Game_renderer, player->rect);
 }

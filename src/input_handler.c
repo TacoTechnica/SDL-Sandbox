@@ -6,18 +6,20 @@
  *
  */
 
-#include "handler.h"
+#include "input_handler.h"
+
 #include<SDL2/SDL.h>
+#include<stdbool.h>
 
 // Whether we're pressing the key currently
-bool InputHandler_key_accelerate = 0;
-bool InputHandler_key_turn_left = 0;
-bool InputHandler_key_shoot = 0;
+bool InputHandler_key_accelerate = false;
+bool InputHandler_key_turn_left = false;
+bool InputHandler_key_shoot = false;
 
 // Previous keys (so we can tell whether we just pressed a key)
-bool InputHandler_key_accelerate_prev = 0;
-bool InputHandler_key_turn_left_prev = 0;
-bool InputHandler_key_shoot_prev = 0;
+bool InputHandler_key_accelerate_prev = false;
+bool InputHandler_key_turn_left_prev = false;
+bool InputHandler_key_shoot_prev = false;
 
 /** InputHandler_press_key( key )
  *      Sets a key to true, so that we can say it's being held
@@ -26,13 +28,13 @@ bool InputHandler_key_shoot_prev = 0;
 void InputHandler_press_key(SDL_Keycode key) {
     switch (key) {
         case INPUT_KEY_ACCELERATE:
-            InputHandler_key_accelerate = 1;
+            InputHandler_key_accelerate = true;
             break;
-        case INPUT_KEY_TURN:
-            InputHandler_key_turn_left = 1;
+        case INPUT_KEY_TURN_LEFT:
+            InputHandler_key_turn_left = true;
             break;
         case INPUT_KEY_SHOOT:
-            InputHandler_key_shoot = 1;
+            InputHandler_key_shoot = true;
             break;
     }
 }
@@ -44,23 +46,23 @@ void InputHandler_press_key(SDL_Keycode key) {
 void InputHandler_release_key(SDL_Keycode key) {
     switch (key) {
         case INPUT_KEY_ACCELERATE:
-            InputHandler_key_accelerate = 0;
+            InputHandler_key_accelerate = false;
             break;
-        case INPUT_KEY_TURN:
-            InputHandler_key_turn_left = 0;
+        case INPUT_KEY_TURN_LEFT:
+            InputHandler_key_turn_left = false;
             break;
         case INPUT_KEY_SHOOT:
-            InputHandler_key_shoot = 0;
+            InputHandler_key_shoot = false;
             break;
     }
 }
 
-/** InputHandler_update()
- *      Update (tick) for input. Called once per frame, at the END of every frame.
+/** InputHandler_tick()
+ *      Tick (update) for input. Called once per frame, at the END of every frame.
  *      Sets our previous inputs so that we can detect 
  *      what our previous inputs were.
  */
-void InputHandler_update() {
+void InputHandler_tick() {
     InputHandler_key_accelerate_prev = InputHandler_key_accelerate;
     InputHandler_key_turn_left_prev = InputHandler_key_turn_left;
     InputHandler_key_shoot_prev = InputHandler_key_shoot;
@@ -71,10 +73,12 @@ bool InputHandler_is_key_held(SDL_Keycode key) {
     switch (key) {
         case INPUT_KEY_ACCELERATE:
             return InputHandler_key_accelerate;
-        case INPUT_KEY_TURN:
+        case INPUT_KEY_TURN_LEFT:
             return InputHandler_key_turn_left;
         case INPUT_KEY_SHOOT:
             return InputHandler_key_shoot;
+        default:
+            return false;
     }
 }
 
@@ -82,10 +86,12 @@ bool InputHandler_is_key_pressed(SDL_Keycode key) {
     switch (key) {
         case INPUT_KEY_ACCELERATE:
             return InputHandler_key_accelerate && !InputHandler_key_accelerate_prev;
-        case INPUT_KEY_TURN:
+        case INPUT_KEY_TURN_LEFT:
             return InputHandler_key_turn_left && !InputHandler_key_turn_left;
         case INPUT_KEY_SHOOT:
             return InputHandler_key_shoot && !InputHandler_key_shoot;
+        default:
+            return false;
     }
 }
 
@@ -93,10 +99,11 @@ bool InputHandler_is_key_released(SDL_Keycode key) {
     switch (key) {
         case INPUT_KEY_ACCELERATE:
             return !InputHandler_key_accelerate && InputHandler_key_accelerate_prev;
-        case INPUT_KEY_TURN:
+        case INPUT_KEY_TURN_LEFT:
             return !InputHandler_key_turn_left && InputHandler_key_turn_left;
         case INPUT_KEY_SHOOT:
             return !InputHandler_key_shoot && InputHandler_key_shoot;
+        default:
+            return false;
     }
-
 }

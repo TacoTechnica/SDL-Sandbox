@@ -1,3 +1,5 @@
+#include<SDL2/SDL.h>
+#include<stdbool.h>
 
 // Hardcoded key inputs
 #define INPUT_KEY_ACCELERATE SDLK_UP
@@ -7,7 +9,7 @@
 // Utility variables, handled in game loop
 void InputHandler_press_key(SDL_Keycode key);
 void InputHandler_release_key(SDL_Keycode key);
-void InputHandler_update();
+void InputHandler_tick();
 
 // User variables, to be used throughout the game
 bool InputHandler_is_key_held(SDL_Keycode key);
