@@ -101,13 +101,6 @@ void Game_loop() {
         if (should_render) {
             Game_render();
         }
-
-        // Quit after 4 seconds
-        if (tick_count > GAME_FPS * 4) {
-            Game_stop();
-            exit(0);
-        }
-
     }
 }
 
