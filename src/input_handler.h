@@ -4,7 +4,7 @@
 // Hardcoded key inputs
 #define INPUT_KEY_ACCELERATE SDLK_UP
 #define INPUT_KEY_TURN_LEFT SDLK_LEFT
-#define INPUT_KEY_SHOOT SDLK_KP_SPACE
+#define INPUT_KEY_SHOOT SDLK_SPACE
 
 // Utility variables, handled in game loop
 void InputHandler_press_key(SDL_Keycode key);

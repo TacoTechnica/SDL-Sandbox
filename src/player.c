@@ -5,6 +5,7 @@
  */
 #include "player.h"
 #include "game.h"
+#include "input_handler.h"
 
 #include <SDL2/SDL.h>
 
@@ -23,8 +24,9 @@ struct player *Player_create(float x, float y) {
 }
 
 void Player_update(struct player *player) {
-    printf("player x: %f\n", player->x);
-    player->x += 0.5;
+    if (InputHandler_is_key_held(INPUT_KEY_SHOOT)) {
+        player->x += 2;
+    }
 }
 
 void Player_render(struct player *player) {
