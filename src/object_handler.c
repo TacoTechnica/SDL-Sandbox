@@ -7,6 +7,8 @@
  */
 
 #include "object_handler.h"
+#include "networking.h"
+#include "client_handler.h"
 #include "player.h"
 #include "game.h"
 
@@ -17,18 +19,19 @@
 
 // Game Object lists. Initialize all to NULL
 struct player *ObjectHandler_players[OBJECT_HANDLER_PLAYER_BUFFER_SIZE];
-//int ObjectHandler_player_count = 0;
 
 /** ObjectHandler_init()
  *      Initialize every starting object in the game here
  *      as well as any handler variables
  */
 void ObjectHandler_init() {
+    // Initialize all of our objects to NULL, so we can stop when we're looping
     int i;
     for(i = 0; i < OBJECT_HANDLER_PLAYER_BUFFER_SIZE; i++)
         ObjectHandler_players[i] = NULL;
 
-    ObjectHandler_new_player(100,100);
+    // test
+    //ObjectHandler_new_player(100,100);
 
 }
 
@@ -40,8 +43,13 @@ void ObjectHandler_tick() {
     // Update all players
     while(i < OBJECT_HANDLER_PLAYER_BUFFER_SIZE) {
         struct player *current_player = ObjectHandler_players[i];
-        if (current_player != NULL)
+        if (current_player != NULL) {
+            // If our client got new inputs, update them in the player
+            if (Client_got_new_inputs) {
+                Player_update_keys(current_player, Client_unpacked_inputs[ current_player->server_index ]);
+            }
             Player_update(current_player);
+        }
         i++;
     }
 }
@@ -65,8 +73,8 @@ void ObjectHandler_render() {
  *      Creates a new player object AND adds it to our game.
  *      Use this to make new players
  */
-struct player *ObjectHandler_new_player(double x, double y) {
-    struct player *player = Player_create(x,y);
+struct player *ObjectHandler_new_player(double x, double y, int server_id) {
+    struct player *player = Player_create(x,y, server_id);
 
     int i = 0;
     while(ObjectHandler_players[i] != NULL) i++;

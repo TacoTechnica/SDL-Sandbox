@@ -5,10 +5,12 @@
 #include "game.h"
 #include "object_handler.h"
 #include "input_handler.h"
+#include "client_handler.h"
+#include "server_handler.h"
 
-#include<stdio.h>
-#include<SDL2/SDL.h>
-
+#include <stdio.h>
+#include <SDL2/SDL.h>
+#include <string.h>
 
 void Game_start();
 void Game_sdl_init();
@@ -58,19 +60,31 @@ void Game_sdl_init() {
 /* void Game_start()
  *  Starts the game: Initializes everything, then runs the main loop
  */
-void Game_start() {
-    Game_sdl_init();
+void Game_start(enum NetworkMode network_mode) {
+
+    Game_network_mode = network_mode;
+
+
+    if (Game_network_mode == NETWORK_MODE_SERVER) {
+        Server_init();
+        Server_accept_connections();
+    } else {
+        // Graphics and local objects
+        Game_sdl_init();
+        printf("Init sdl!\n");
+        ObjectHandler_init();
+        printf("Init object handler!\n");
+        Client_init();
+    }
+
+    printf("Starting game loop\n");
     Game_running = 1;
-
-    ObjectHandler_init();
-
     Game_loop();
 }
 
 /* void Game_loop()
  *  Main Game loop, calling every other loop
  */
-
 void Game_loop() {
     unsigned int now_time;
     unsigned int prev_time = SDL_GetTicks();
@@ -98,13 +112,25 @@ void Game_loop() {
             prev_time = now_time;
         }
 
-        if (should_render) {
+        if (Game_network_mode == NETWORK_MODE_CLIENT && should_render) {
             Game_render();
         }
     }
 }
 
+/* void Game_tick()
+ *  Main Game tick event, called once per frame.
+ *  Handles all game logic for all objects and keyboard input
+ */
 void Game_tick() {
+
+    // If we're the server, we're literally not simulating anything
+    if (Game_network_mode == NETWORK_MODE_SERVER) {
+        Server_tick();
+        return;
+    } else {
+        Client_tick();
+    }
 
     // Handle SDL Events (keyboard input and window closing)
     while (SDL_PollEvent(&Game_sdl_event)) {
@@ -131,10 +157,13 @@ void Game_tick() {
     ObjectHandler_tick();
 
     // InputHandler_tick() MUST be called after the object tick
-    InputHandler_tick(); 
-    
+    //InputHandler_tick(); 
 }
 
+/* void Game_render()
+ *  Main game render event, called once per frame.
+ *  Handles all drawing and rendering in our game
+ */
 void Game_render() {
     SDL_SetRenderDrawColor(
             Game_renderer,
@@ -149,19 +178,40 @@ void Game_render() {
     SDL_RenderPresent(Game_renderer);
 }
 
+/* void Game_stop()
+ *  Stops the game
+ */
 void Game_stop() {
     Game_running = 0;
+    
+    if (Game_network_mode == NETWORK_MODE_SERVER) {
+        Server_quit();
+    } else {
+        Client_quit();
+    }
+
     SDL_DestroyRenderer(Game_renderer);
     SDL_DestroyWindow(Game_window);
     SDL_Quit();
 }
 
+// Leave arguments blank for client
+// add argument "-s" for server
+int main(int argc, char **argv) {
 
-int main() {
-
-    printf("Starting game\n");
-
-    Game_start();
+    if (argc == 1) {
+        printf("Starting client game\n");
+        Game_start(NETWORK_MODE_CLIENT);
+    } else {
+        if (strcmp(argv[1], "-s") == 0) {
+            printf("Starting server game\n");
+            Game_start(NETWORK_MODE_SERVER);
+        } else {
+            printf("Bad arrguments.");
+            printf("Either use no arguments or use the \"-s\" flag to make a server\n");
+        }
+    }
     Game_stop();
+
     return 0;
 }
