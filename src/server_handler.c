@@ -116,7 +116,6 @@ void Server_accept_connections() {
  */
 void Server_tick() { 
     
-    printf("start server tick\n");
     // Receive inputs
     char buffer[Server_number_of_clients];
     int i = 0;
@@ -137,7 +136,6 @@ void Server_tick() {
             printf("Server Send to Client errorno %d\n", errno);
             exit(-1);
         }
-        printf("Server sent to %d\n", i);
     }
 }
 
