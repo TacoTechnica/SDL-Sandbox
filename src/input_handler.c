@@ -24,6 +24,16 @@ bool InputHandler_key_turn_left_prev = false;
 bool InputHandler_key_shoot_prev = false;
 */
 
+/** InputHandler_init()
+ *      Initializes input handler, setting all variables to false
+ */
+void InputHandler_init() {
+    InputHandler_key_accelerate = false;
+    InputHandler_key_turn_left = false;
+    InputHandler_key_shoot = false;
+}
+
+
 /** InputHandler_press_key( key )
  *      Sets a key to true, so that we can say it's being held
  *
@@ -59,6 +69,7 @@ void InputHandler_release_key(SDL_Keycode key) {
             break;
     }
 }
+
 
 /** InputHandler_tick()
  *      Tick (update) for input. Called once per frame, at the END of every frame.

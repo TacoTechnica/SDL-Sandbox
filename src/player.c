@@ -21,12 +21,18 @@ struct player *Player_create(float x, float y, int server_index) {
     player->x = x;
     player->y = y;
     player->server_index = server_index;
+    
+    player->key_accelerate = false;
+    player->key_turn_left = false;
+    player->key_shoot = false;
+
     player->rect = malloc( sizeof(SDL_Rect) );
+
     return player;
 }
 
 void Player_update(struct player *player) {
-    if (player->key_accelerate) {
+    if (player->key_shoot) {
         player->x += 2;
     }
 

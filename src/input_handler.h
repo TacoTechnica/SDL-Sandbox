@@ -14,6 +14,8 @@ bool InputHandler_key_accelerate;
 bool InputHandler_key_turn_left;
 bool InputHandler_key_shoot;
 
+
+void InputHandler_init();
 // Utility variables, handled in game loop
 void InputHandler_press_key(SDL_Keycode key);
 void InputHandler_release_key(SDL_Keycode key);

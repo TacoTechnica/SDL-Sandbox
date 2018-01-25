@@ -66,15 +66,15 @@ void Game_start(enum NetworkMode network_mode) {
 
 
     if (Game_network_mode == NETWORK_MODE_SERVER) {
-        Server_init();
+        Server_init(2);
         Server_accept_connections();
     } else {
         // Graphics and local objects
         Game_sdl_init();
-        printf("Init sdl!\n");
         ObjectHandler_init();
-        printf("Init object handler!\n");
-        Client_init();
+        InputHandler_init();
+
+        Client_init("127.0.0.1");
     }
 
     printf("Starting game loop\n");
@@ -183,16 +183,16 @@ void Game_render() {
  */
 void Game_stop() {
     Game_running = 0;
-    
+
     if (Game_network_mode == NETWORK_MODE_SERVER) {
         Server_quit();
     } else {
         Client_quit();
+        SDL_DestroyRenderer(Game_renderer);
+        SDL_DestroyWindow(Game_window);
+        SDL_Quit();
     }
 
-    SDL_DestroyRenderer(Game_renderer);
-    SDL_DestroyWindow(Game_window);
-    SDL_Quit();
 }
 
 // Leave arguments blank for client

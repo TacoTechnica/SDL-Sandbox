@@ -4,7 +4,7 @@
 
 #define SERVER_PORT "8000"
 
-void Server_init();
+void Server_init(int num_clients);
 void Server_accept_connections();
 void Server_tick();
 void Server_quit();

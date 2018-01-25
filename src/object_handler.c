@@ -9,6 +9,7 @@
 #include "object_handler.h"
 #include "networking.h"
 #include "client_handler.h"
+#include "input_handler.h"
 #include "player.h"
 #include "game.h"
 
@@ -47,6 +48,13 @@ void ObjectHandler_tick() {
             // If our client got new inputs, update them in the player
             if (Client_got_new_inputs) {
                 Player_update_keys(current_player, Client_unpacked_inputs[ current_player->server_index ]);
+            }
+
+            // If we're dealing with our own player, update it's keyboard inputs
+            if (i == Client_player_index) {
+                current_player->key_accelerate = InputHandler_key_accelerate;
+                current_player->key_turn_left =  InputHandler_key_turn_left;
+                current_player->key_shoot =      InputHandler_key_shoot;
             }
             Player_update(current_player);
         }

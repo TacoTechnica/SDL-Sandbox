@@ -31,6 +31,11 @@ void Client_init(char *server_ip) {
     printf("Creating client...\n");
     Client_server_socket  = socket(AF_INET, SOCK_STREAM, 0);
 
+    /*if (setsockopt(Client_server_socket, SOL_SOCKET, SO_REUSEADDR, &(int) { 1 }, sizeof(int)) < 0) {
+        printf("setsockopt failed\n");
+        exit(-1);
+    }*/
+
     if (Client_server_socket < 0) {
         printf("socket creation err\n");
         exit(-1);
@@ -52,6 +57,10 @@ void Client_init(char *server_ip) {
         printf("connect errno %d\n", errno);
         exit(-1);
     }
+
+    // Make our socket non-blocking
+    int flags = fcntl(Client_server_socket, F_GETFL, 0);
+    fcntl(Client_server_socket, F_SETFL, flags | O_NONBLOCK);
 
     // Wait for server confirmation
     char result[2];
@@ -81,6 +90,7 @@ void Client_init(char *server_ip) {
  *      can simulate them locally
  */
 void Client_tick() {
+
     char send_buffer; // Sent to server
     char result[30];  // Received from server. 30 is arbitrary, we won't have 30+ clients
 

@@ -101,9 +101,12 @@ void Server_accept_connections() {
 
     // Now, send a confirmation to all clients so they can start playing
     //      We send an INDEX to all clients to identify them with
-    int i;
+    char confirmation[2];
+    confirmation[1] = Server_number_of_clients;
+    int i = 0;
     for(; i < Server_number_of_clients; i++) {
-        send(Server_client_sockets[i], &i, sizeof(i), 0);
+        confirmation[0] = i;
+        send(Server_client_sockets[i], confirmation, sizeof(confirmation), 0);
     }
     printf("All clients have connected!\n");
 }
@@ -112,14 +115,15 @@ void Server_accept_connections() {
  *  Receive input data from clients and send game data back to the clients
  */
 void Server_tick() { 
-
+    
+    printf("start server tick\n");
     // Receive inputs
     char buffer[Server_number_of_clients];
     int i = 0;
     for(; i < Server_number_of_clients; i++) {
         // Todo: Check for reading null
         int read_size = read( Server_client_sockets[i], &buffer[i], sizeof(buffer[i]) );
-        if (read_size == 1) {
+        if (read_size == 0) {
             buffer[i] = -1; // No-input!
         }
     }
@@ -133,6 +137,7 @@ void Server_tick() {
             printf("Server Send to Client errorno %d\n", errno);
             exit(-1);
         }
+        printf("Server sent to %d\n", i);
     }
 }
 
